@@ -1,0 +1,34 @@
+---
+  - name: "Add Oracle Jdk apt repo"
+    sudo: yes
+    sudo_user: root
+    apt_repository: 
+       repo='{{item}} http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' 
+       state=present
+    with_items:
+      - deb
+      - deb-src
+
+  - name: "Select Oracle License"
+    shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+
+  - name: "Install Oracle JDK6"
+    sudo: yes 
+    sudo_user: root
+    apt: pkg="{{item}}" state=present
+    with_items:
+      - "oracle-java{{jdk_version}}-installer"
+
+  - name: "Install openjdk-6-jdk"
+    sudo: yes
+    apt: pkg=openjdk-6-jdk state=present update_cache=yes
+    tags: openjdk6
+
+  - name: "Install Open JDK7"
+    sudo: yes 
+    apt: pkg=openjdk-7-jdk state=present update_cache=yes
+    tags: openjdk7
+
+  - name: "Install Java 7 unlimited security"
+    sudo: yes
+    apt: pkg=asf-build-jdk1.7.0-79-unlimited-security state=present update_cache=yes

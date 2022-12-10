@@ -1,0 +1,180 @@
+---
+  - name: "Copying sources.list"
+    sudo: yes
+    sudo_user: root
+    tags: install_libraries
+    copy: src=sources.list dest=/etc/apt/sources.list
+
+  - name: "Copying toolchains.xml"
+    sudo: yes
+    sudo_user: root
+    tags: install_libraries
+    copy: src=toolchains.xml dest=/home/jenkins/.m2/toolchains.xml
+
+  - name: "Importing lxc-docker apt key"
+    sudo: yes
+    sudo_user: root
+    shell: apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+
+  - name: "Adding lxc-docker apt repo"
+    sudo: yes
+    sudo_user: root
+    apt_repository: repo='deb https://get.docker.io/ubuntu docker main' state=present
+
+  - name: Install_svn-1.6 | remove subversion.list
+    sudo: yes
+    sudo_user: root
+    file: path=/etc/apt/sources.list.d/subversion.list state=absent
+    
+  - name: apt-get update
+    sudo: yes
+    sudo_user: root
+    apt: update_cache=yes
+    tags: install_libraries
+    
+  - name: Install_svn-1.6 | unpin svn versions
+    sudo: yes
+    sudo_user: root
+    command: echo "{{item}} install" | dpkg --set-selections
+    with_items:
+      - libsvn1
+      - python-svn
+      - subversion
+      - libsvn-dev
+    tags: install_libraries
+      
+  - name: "Installing Libraries"
+    sudo: yes
+    sudo_user: root
+    apt: pkg={{item}} state=latest
+    tags: install_libraries
+    with_items:
+      - ant
+      - asciidoc
+      - autoconf
+      - automake
+      - bison
+      - build-essential
+      - cabal-install
+      - cmake
+      - cppcheck
+      - curl
+      - dh-make
+      - debhelper
+      - devscripts
+      - emacs24-nox
+      - erlang-base
+      - erlang-eunit
+      - erlang-dev
+      - flex
+      - g++
+      - g++-4.8-multilib
+      - g++-multilib
+      - gcc-multilib
+      - genisoimage
+      - ghc
+      - git-core
+      - golang
+      - golang-go
+      - lib32z1
+      - lib32ncurses5
+      - lib32bz2-1.0
+      - libapr1-dev
+      - libbit-vector-perl
+      - libboost-dev
+      - libboost-filesystem-dev
+      - libboost-program-options-dev
+      - libboost-system-dev
+      - libboost-test-dev
+      - libc6-dev-i386
+      - libclass-accessor-class-perl
+      - libcppunit-dev
+      - libcurl3
+      - libcurl3-dev
+      - libevent-dev
+      - libfuse-dev
+      - libghc-binary-dev
+      - libghc-hashable-dev
+      - libghc-http-dev
+      - libghc-network-dev
+      - libghc-unordered-containers-dev
+      - libghc-vector-dev
+      - libglib2.0-dev
+      - libjpeg8-dev
+      - liblzo2-dev
+      - libmono-system-web2.0-cil
+      - libqt4-dev
+      - libsasl2-dev
+      - libsnappy-dev
+      - libssl-dev
+      - libstdc++-4.8-dev
+      - libtool
+      - libxml-xpath-perl
+      - libz-dev
+      - linux-headers-3.13.0-36
+      - linux-headers-3.13.0-36-generic
+      - linux-image-3.13.0-36-generic
+      - linux-image-3.13.0-36-lowlatency
+      - lua5.2
+      - liblua5.2-dev
+      - lxc-docker
+      - mingw32
+      - mingw32-binutils
+      - mingw32-runtime
+      - nodejs
+      - nodejs-dev
+      - nodejs-legacy
+      - npm
+      - nsis
+      - ntp
+      - mono-devel
+      - mono-gmcs
+      - php5
+      - php5-cli
+      - php5-dev
+      - php-pear
+      - pkg-config
+      - protobuf-compiler
+      - python-all
+      - python-all-dev
+      - python-all-dbg
+      - python-boto
+      - python-dev
+      - python-pip
+      - python-setuptools
+      - python-support
+      - re2c
+      - ruby
+      - ruby-dev
+      - screen
+      - sharutils
+      - shellcheck
+      - sloccount
+      - g++-4.8-multilib
+      - libstdc++-4.8-dev
+      - libswt-gtk-3-jni 
+      - libswt-gtk-3-java
+      - tmux
+      - unzip
+      - xvfb
+      - libsvn1
+      - python-svn
+      - subversion
+      - libsvn-dev
+
+  - name: "Installing rvm"
+    sudo: yes
+    sudo_user: jenkins
+    shell: curl -L https://get.rvm.io | bash -s stable --autolibs=read-fail creates=~/.rvm
+
+  - name: "Installing bundler and rake gems"
+    sudo: yes
+    sudo_user: root
+    gem: name={{item}} user_install=no state=latest
+    with_items:
+      - bundler
+      - rake
+    tags: install_libraries
+    
+    
+    
